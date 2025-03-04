@@ -1,37 +1,35 @@
-version: '3.9'
-
 services:
-  db:
-    image: mariadb:latest
-    container_name: mariadb
-    restart: unless-stopped
-    volumes:
-      - ${NEXTCLOUD_DATA}/db:/var/lib/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${DB_DATABASE}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
+    db:
+        image: mariadb:latest
+        container_name: mariadb
+        restart: unless-stopped
+        volumes:
+            - ${MYSQL_VOLUME_PATH}/db:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
-  nextcloud:
-    image: nextcloud:latest
-    container_name: nextcloud
-    restart: unless-stopped
-    ports:
-      - 8080:80
-    volumes:
-      - ${NEXTCLOUD_DATA}/html:/var/www/html
-      - /mnt/cloud/backups/iphone:/var/www/html/data/iphone/files
-    environment:
-      - MYSQL_HOST=db
-      - MYSQL_DATABASE=${DB_DATABASE}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
-      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
-    depends_on:
-      - db
+    nextcloud:
+        image: nextcloud:latest
+        container_name: nextcloud
+        restart: unless-stopped
+        ports:
+            - 8080:80
+        volumes:
+            - ${NEXTCLOUD_DATA}/html:/var/www/html
+        environment:
+            - MYSQL_HOST=db
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - NEXTCLOUD_TRUSTED_DOMAIN=${NEXTCLOUD_TRUSTED_DOMAIN}
+            - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+            - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+        depends_on:
+            - db
 
 networks:
-  homelab:
-    external: true
+    homelab:
+        external: true
