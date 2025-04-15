@@ -1,0 +1,22 @@
+services:
+  dash:
+    container_name: Dash.
+    image: mauricenino/dashdot:latest 
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - homelab
+    environment:
+      - DASHDOT_ENABLE_CPU_TEMPS=${DASHDOT_ENABLE_CPU_TEMPS}
+      - DASHDOT_SPEED_TEST_FROM_PATH=${DASHDOT_SPEED_TEST_FROM_PATH}
+      - DASHDOT_SHOW_DASH_VERSION=${DASHDOT_SHOW_DASH_VERSION}
+    ports:
+      - 3000:3000 # view
+      - 3001:3001 # server
+      - 3002:3002 # docs
+    volumes:
+      - /:/mnt/host:ro
+
+networks:
+  homelab:
+    external: true
