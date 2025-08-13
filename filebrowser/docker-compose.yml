@@ -1,0 +1,20 @@
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: ${FILEBROWSER_CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - ${FILEBROWSER_MOUNT_ROOT_PATH}:/srv #Change to match your directory
+      - ${FILEBROWSER_DATABASE_ROOT_PATH}/filebrowser.db:/database/filebrowser.db #Change to match your directory
+      - ${FILEBROWSER_SETTINGS_ROOT_PATH}:/config #Change to match your directory
+    environment:
+      - PUID=$(id -u)
+      - PGID=$(id -g)
+    ports:
+      - 8095:80 #Change the port if needed
+
+networks:
+    homelab:
+        external: true
