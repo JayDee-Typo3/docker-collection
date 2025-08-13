@@ -1,0 +1,57 @@
+services:
+    cherrymusic:
+        #build:
+        #  context: .
+        #  dockerfile: alpine.Dockerfile
+        image: tobi312/rpi-cherrymusic:alpine
+        container_name: cherrymusic
+        restart: unless-stopped
+        ports:
+            - ${CHERRYMUSIC_PORT}:8080/tcp
+            - 8443:8443/tcp
+        environment:
+            CONFIG_DOWNLOAD_ENABLE: "0" # optional, for first start!
+            #SELF_SIGNED_CERT_CREATE: "1"
+            #SERVER_SSL_ENABLED: "True"
+        volumes:
+            - ${CHERRYMUSIC_CONFIG_FOLDER}:/cherrymusic/.config/cherrymusic:rw
+            - ${CHERRYMUSIC_DATA_FOLDER}:/cherrymusic/.local/share/cherrymusic:rw
+            - ${CHERRYMUSIC_MUSIC_FOLER}:/cherrymusic/Music:ro
+            #- ./ssl:/cherrymusic/ssl
+        networks:
+            - homelab
+        healthcheck:
+            test: ["CMD-SHELL", "nc -nzv -w 3 127.0.0.1 8080 || exit 1"]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+        ## Traefik Example: https://github.com/Tob1as/docker-kubernetes-collection/blob/master/examples_docker-compose/traefik.yml
+        #labels:
+        #  - "traefik.enable=true"
+        #  #- "traefik.docker.network=mynetwork"
+        #  - "traefik.http.services.cherrymusic.loadbalancer.server.port=8080"
+        #  - "traefik.http.services.cherrymusic.loadbalancer.server.scheme=http"  # when "https" then set "--serversTransport.insecureSkipVerify=true" for traefik
+        #  # http
+        #  - "traefik.http.routers.cherrymusic-http.rule=Host(`music.example.com`)"
+        #  - "traefik.http.routers.cherrymusic-http.entrypoints=web"
+        #  - "traefik.http.routers.cherrymusic-http.service=cherrymusic"
+        #  # https
+        #  - "traefik.http.routers.cherrymusic-https.tls=true"
+        #  - "traefik.http.routers.cherrymusic-https.rule=Host(`music.example.com`)"
+        #  - "traefik.http.routers.cherrymusic-https.entrypoints=websecure"
+        #  - "traefik.http.routers.cherrymusic-https.service=cherrymusic"
+        #  # load middlewares for routers
+        #  - "traefik.http.routers.cherrymusic-http.middlewares=cherrymusic-https"
+        #  # http to https redirect
+        #  - "traefik.http.middlewares.cherrymusic-https.redirectscheme.scheme=https"
+        #  #- "traefik.http.middlewares.cherrymusic-https.redirectscheme.permanent=true"
+        #  #- "traefik.http.middlewares.cherrymusic-https.redirectscheme.port=443"
+## for Traefik
+#networks:
+#  default:
+#    external: true
+#    name: mynetwork
+networks:
+    homelab:
+        external: true
+        name: homelab
