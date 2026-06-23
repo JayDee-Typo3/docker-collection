@@ -30,6 +30,7 @@ services:
     restart: always
     networks:
       - homelab
+      - internal
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.immich.loadbalancer.server.port=2283"
@@ -53,12 +54,16 @@ services:
     env_file:
       - .env
     restart: always
+    networks:
+      - internal
     healthcheck:
       disable: false
 
   redis:
     container_name: immich_redis
     image: docker.io/valkey/valkey:9@sha256:3b55fbaa0cd93cf0d9d961f405e4dfcc70efe325e2d84da207a0a8e6d8fde4f9
+    networks:
+      - internal
     healthcheck:
       test: redis-cli ping || exit 1
     restart: always
@@ -78,6 +83,8 @@ services:
       - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
     shm_size: 128mb
     restart: always
+    networks:
+      - internal
     healthcheck:
       disable: false
 
@@ -85,5 +92,6 @@ volumes:
   model-cache:
 
 networks:
-    homelab:
-        external: true
+  homelab:
+    external: true
+  internal:
